@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/habit.dart';
@@ -26,8 +25,6 @@ class HabitRepository {
 
   static const String perfectDayKey = 'singleton';
 
-  static final DateFormat _dateFormat = DateFormat('yyyy-MM-dd');
-
   final Box<Habit> _habits;
   final Box<HabitLog> _logs;
   final Box<HabitStreak> _streaks;
@@ -35,7 +32,12 @@ class HabitRepository {
   final Uuid _uuid;
 
   /// Formats [date] as `"yyyy-MM-dd"`.
-  static String formatDate(DateTime date) => _dateFormat.format(date);
+  static String formatDate(DateTime date) {
+    final y = date.year.toString().padLeft(4, '0');
+    final m = date.month.toString().padLeft(2, '0');
+    final d = date.day.toString().padLeft(2, '0');
+    return '$y-$m-$d';
+  }
 
   /// Deterministic Hive key for a habit+date log.
   static String logKey(String habitId, String date) => '$habitId|$date';

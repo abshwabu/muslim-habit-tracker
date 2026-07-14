@@ -1,23 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeScreen extends StatelessWidget {
+import '../widgets/habit_grid.dart';
+import '../widgets/perfect_day_banner.dart';
+import 'add_habit_screen.dart';
+
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Habit Tracker'),
       ),
-      body: Center(
-        child: Text(
-          'Welcome',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(
-                      alpha: 0.7,
-                    ),
-              ),
-        ),
+      body: const Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          PerfectDayBanner(),
+          Expanded(child: HabitGrid()),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const AddHabitScreen(),
+            ),
+          );
+        },
+        tooltip: 'Add habit',
+        child: const Icon(Icons.add),
       ),
     );
   }
