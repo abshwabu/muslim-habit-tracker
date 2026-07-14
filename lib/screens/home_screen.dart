@@ -14,7 +14,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Habit Tracker'),
+        title: const Text('Muslim Habit Tracker'),
         actions: [
           IconButton(
             tooltip: 'Stats',

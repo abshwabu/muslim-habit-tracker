@@ -7,6 +7,7 @@ import '../providers/providers.dart';
 import '../screens/habit_detail_screen.dart';
 import '../services/habit_repository.dart';
 import '../services/schedule_calculator.dart';
+import 'empty_state_message.dart';
 import 'habit_grid_cell.dart';
 import 'habit_ui_utils.dart';
 
@@ -21,17 +22,16 @@ class HabitGrid extends ConsumerWidget {
     final logs = ref.watch(gridLogsProvider);
 
     if (habits.isEmpty) {
-      return Center(
-        child: Text(
-          'No active habits yet',
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(
-                      alpha: 0.55,
-                    ),
-              ),
-        ),
+      return const EmptyStateMessage(
+        icon: Icons.spa_outlined,
+        title: 'No habits yet',
+        body:
+            'Tap + to add a good deed to track, or restore defaults '
+            'from Settings after a reset.',
       );
     }
+
+    final hasAnyCompletion = logs.values.any((log) => log.completed);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -41,56 +41,81 @@ class HabitGrid extends ConsumerWidget {
                 horizontalPadding)
             .clamp(0.0, double.infinity);
 
-        return SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(12, 0, 12, 88),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: kHabitNameColumnWidth,
-                    height: kGridHeaderHeight,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Habit',
-                        style:
-                            Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withValues(alpha: 0.45),
-                                  fontWeight: FontWeight.w600,
-                                ),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (!hasAnyCompletion)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                child: Text(
+                  'Tap today’s empty circles to log your first completions. '
+                  'Non-due days show a dash.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.55),
+                        height: 1.35,
                       ),
-                    ),
-                  ),
-                  for (final habit in habits)
-                    HabitNameCell(
-                      habit: habit,
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) =>
-                                HabitDetailScreen(habitId: habit.id),
-                          ),
-                        );
-                      },
-                    ),
-                ],
-              ),
-              SizedBox(
-                width: daysWidth,
-                child: _HorizontalDays(
-                  dates: dates,
-                  habits: habits,
-                  logs: logs,
                 ),
               ),
-            ],
-          ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 88),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: kHabitNameColumnWidth,
+                          height: kGridHeaderHeight,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Habit',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelSmall
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(alpha: 0.45),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ),
+                        ),
+                        for (final habit in habits)
+                          HabitNameCell(
+                            habit: habit,
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) =>
+                                      HabitDetailScreen(habitId: habit.id),
+                                ),
+                              );
+                            },
+                          ),
+                      ],
+                    ),
+                    SizedBox(
+                      width: daysWidth,
+                      child: _HorizontalDays(
+                        dates: dates,
+                        habits: habits,
+                        logs: logs,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         );
       },
     );

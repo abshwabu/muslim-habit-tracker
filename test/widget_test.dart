@@ -88,7 +88,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Habit Tracker'), findsOneWidget);
+    expect(find.text('Muslim Habit Tracker'), findsOneWidget);
     expect(find.textContaining('day streak'), findsOneWidget);
     expect(find.text("Qur'an Reading"), findsOneWidget);
     expect(find.text('Dhikr'), findsOneWidget);

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/providers.dart';
+import '../services/app_info.dart';
 import '../services/stats_calculator.dart';
+import '../widgets/empty_state_message.dart';
 import '../widgets/habit_ui_utils.dart';
 import 'share_export_screen.dart';
 
@@ -14,6 +16,9 @@ class StatsScreen extends ConsumerWidget {
     final perfect = ref.watch(perfectDayStreakProvider);
     final habitStats = ref.watch(habitStatsProvider);
     final scheme = Theme.of(context).colorScheme;
+    final isFreshStart = perfect.currentStreak == 0 &&
+        perfect.longestStreak == 0 &&
+        habitStats.every((row) => row.lifetimeCompletions == 0);
 
     return Scaffold(
       appBar: AppBar(
@@ -32,7 +37,16 @@ class StatsScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: ListView(
+      body: isFreshStart
+          ? EmptyStateMessage(
+              icon: Icons.insights_outlined,
+              title: 'Your first day',
+              body:
+                  'Complete today’s due habits on the home grid to start a '
+                  'perfect-day streak. Stats and totals will grow as you go. '
+                  '\n\n${AppInfo.name} works fully offline.',
+            )
+          : ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
         children: [
           Text(
