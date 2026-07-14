@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/habit_grid.dart';
 import '../widgets/perfect_day_banner.dart';
 import 'add_habit_screen.dart';
+import 'stats_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -13,6 +14,19 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Habit Tracker'),
+        actions: [
+          IconButton(
+            tooltip: 'Stats',
+            icon: const Icon(Icons.insights_rounded),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const StatsScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: const Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
