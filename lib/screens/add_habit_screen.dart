@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import '../models/frequency_type.dart';
 import '../models/habit.dart';
 import '../providers/providers.dart';
+import '../services/app_settings.dart';
 import '../widgets/habit_ui_utils.dart';
 
 /// Create a new habit, or edit an existing one when [habitId] is set.
@@ -34,16 +35,6 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
   Habit? _existing;
   var _initialized = false;
   var _saving = false;
-
-  static const _weekdayLabels = [
-    (1, 'Mon'),
-    (2, 'Tue'),
-    (3, 'Wed'),
-    (4, 'Thu'),
-    (5, 'Fri'),
-    (6, 'Sat'),
-    (7, 'Sun'),
-  ];
 
   @override
   void didChangeDependencies() {
@@ -163,6 +154,10 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final weekdayError = _weekdayError();
+    final weekStartsOnMonday = ref.watch(weekStartsOnMondayProvider);
+    final weekdayLabels = orderedWeekdayLabels(
+      weekStartsOnMonday: weekStartsOnMonday,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -281,7 +276,7 @@ class _AddHabitScreenState extends ConsumerState<AddHabitScreen> {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  for (final entry in _weekdayLabels)
+                  for (final entry in weekdayLabels)
                     FilterChip(
                       label: Text(entry.$2),
                       selected: _weekdays.contains(entry.$1),

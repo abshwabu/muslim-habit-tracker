@@ -1,4 +1,6 @@
-import 'package:flutter_riverpod/legacy.dart';
+/// Prefer importing via `providers.dart` or `settings_providers.dart`.
+///
+/// Kept so older imports of this path still resolve.
+library;
 
-/// Number of days to show in the habit grid. Default: 30.
-final gridRangeProvider = StateProvider<int>((ref) => 30);
+export 'settings_providers.dart' show gridRangeProvider, GridRangeNotifier;

@@ -10,6 +10,7 @@ import 'package:muslim_habit_tracker/models/habit_streak.dart';
 import 'package:muslim_habit_tracker/models/hive_setup.dart';
 import 'package:muslim_habit_tracker/models/perfect_day_streak.dart';
 import 'package:muslim_habit_tracker/providers/providers.dart';
+import 'package:muslim_habit_tracker/services/app_settings.dart';
 import 'package:muslim_habit_tracker/services/habit_repository.dart';
 import 'package:muslim_habit_tracker/services/seed_defaults.dart';
 
@@ -129,9 +130,23 @@ void main() {
     expect(container.read(perfectDayStreakProvider).currentStreak, 1);
   });
 
-  test('gridRangeProvider defaults to 30', () {
+  test('gridRangeProvider defaults to 30 and persists', () async {
     expect(container.read(gridRangeProvider), 30);
-    container.read(gridRangeProvider.notifier).state = 14;
+    await container.read(gridRangeProvider.notifier).setRange(14);
     expect(container.read(gridRangeProvider), 14);
+    expect(Hive.box(HiveBoxes.settings).get(SettingsKeys.gridRange), 14);
+  });
+
+  test('haptic and week-start settings persist', () async {
+    expect(container.read(hapticFeedbackProvider), isTrue);
+    expect(container.read(weekStartsOnMondayProvider), isTrue);
+
+    await container.read(hapticFeedbackProvider.notifier).setEnabled(false);
+    await container
+        .read(weekStartsOnMondayProvider.notifier)
+        .setStartsOnMonday(false);
+
+    expect(container.read(hapticFeedbackProvider), isFalse);
+    expect(container.read(weekStartsOnMondayProvider), isFalse);
   });
 }

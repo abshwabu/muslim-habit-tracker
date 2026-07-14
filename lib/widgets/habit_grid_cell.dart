@@ -78,13 +78,14 @@ class HabitGridCell extends StatelessWidget {
   }
 }
 
-/// Day-of-week letter above a column.
+/// Day-of-week abbreviation above a column (`Sa`/`Su` keep weekends clear).
 class HabitGridDayHeader extends StatelessWidget {
   const HabitGridDayHeader({super.key, required this.date});
 
   final DateTime date;
 
-  static const _letters = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  /// Indexed by `date.weekday - 1` (Mon…Sun).
+  static const _letters = ['M', 'T', 'W', 'T', 'F', 'Sa', 'Su'];
 
   @override
   Widget build(BuildContext context) {

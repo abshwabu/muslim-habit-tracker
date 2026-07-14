@@ -292,7 +292,7 @@ class _StatTile extends StatelessWidget {
   }
 }
 
-class _HabitHistoryCalendar extends StatelessWidget {
+class _HabitHistoryCalendar extends ConsumerWidget {
   const _HabitHistoryCalendar({
     required this.habit,
     required this.completedDates,
@@ -304,10 +304,11 @@ class _HabitHistoryCalendar extends StatelessWidget {
   final Color color;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final today = todayDate();
     final firstDay = dateOnly(habit.createdAt);
     final scheme = Theme.of(context).colorScheme;
+    final weekStartsOnMonday = ref.watch(weekStartsOnMondayProvider);
 
     return Container(
       decoration: BoxDecoration(
@@ -319,6 +320,9 @@ class _HabitHistoryCalendar extends StatelessWidget {
         firstDay: firstDay.isAfter(today) ? today : firstDay,
         lastDay: today,
         focusedDay: today,
+        startingDayOfWeek: weekStartsOnMonday
+            ? StartingDayOfWeek.monday
+            : StartingDayOfWeek.sunday,
         calendarFormat: CalendarFormat.month,
         availableGestures: AvailableGestures.horizontalSwipe,
         headerStyle: const HeaderStyle(

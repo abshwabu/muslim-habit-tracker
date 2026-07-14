@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
@@ -7,6 +8,7 @@ import '../services/habit_repository.dart';
 import '../services/schedule_calculator.dart';
 import '../services/streak_calculator.dart';
 import 'habit_repository_provider.dart';
+import 'settings_providers.dart';
 import 'streaks_provider.dart';
 
 /// Active habits only. All habit writes go through this notifier.
@@ -54,6 +56,14 @@ class HabitsNotifier extends StateNotifier<List<Habit>> {
     final day = dateOnly(date ?? DateTime.now());
     final habit = _repo.getHabit(habitId);
     final updated = await _repo.toggleCompletion(habitId, day);
+
+    if (_ref.read(hapticFeedbackProvider)) {
+      try {
+        await HapticFeedback.selectionClick();
+      } catch (_) {
+        // Services binding may be absent in plain unit tests.
+      }
+    }
 
     if (habit != null) {
       await _syncHabitStreak(habit, day, completed: updated.completed);

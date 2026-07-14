@@ -128,4 +128,14 @@ class HabitRepository {
   Future<void> savePerfectDayStreak(PerfectDayStreak streak) {
     return _perfectDay.put(perfectDayKey, streak);
   }
+
+  /// Hard-deletes all habits, logs, and streaks (not app settings).
+  Future<void> clearAllHabitData() async {
+    await Future.wait([
+      _habits.clear(),
+      _logs.clear(),
+      _streaks.clear(),
+      _perfectDay.clear(),
+    ]);
+  }
 }
