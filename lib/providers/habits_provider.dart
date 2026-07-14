@@ -5,7 +5,9 @@ import '../models/habit.dart';
 import '../models/habit_log.dart';
 import '../services/habit_repository.dart';
 import '../services/schedule_calculator.dart';
+import '../services/streak_calculator.dart';
 import 'habit_repository_provider.dart';
+import 'streaks_provider.dart';
 
 /// Active habits only. All habit writes go through this notifier.
 class HabitsNotifier extends StateNotifier<List<Habit>> {
@@ -50,9 +52,79 @@ class HabitsNotifier extends StateNotifier<List<Habit>> {
 
   Future<HabitLog> toggleCompletion(String habitId, {DateTime? date}) async {
     final day = dateOnly(date ?? DateTime.now());
+    final habit = _repo.getHabit(habitId);
     final updated = await _repo.toggleCompletion(habitId, day);
+
+    if (habit != null) {
+      await _syncHabitStreak(habit, day, completed: updated.completed);
+      await _syncPerfectDayStreak(day);
+    }
+
     _bumpLogsRevision();
     return updated;
+  }
+
+  Future<void> _syncHabitStreak(
+    Habit habit,
+    DateTime day, {
+    required bool completed,
+  }) async {
+    if (completed) {
+      final current = _repo.getHabitStreak(habit.id);
+      final dueDates = dueDatesInRange(habit, habit.createdAt, day);
+      final next = updateHabitStreak(habit, current, day, dueDates);
+      await _repo.saveHabitStreak(next);
+    } else {
+      final logs = _repo.getLogsForHabit(habit.id);
+      final recomputed = calculateHabitStreak(
+        habit: habit,
+        logs: logs,
+        asOf: todayDate(),
+      );
+      await _repo.saveHabitStreak(recomputed);
+    }
+    _ref.read(habitStreaksProvider.notifier).refresh();
+  }
+
+  Future<void> _syncPerfectDayStreak(DateTime day) async {
+    final due = getDueHabitsForDate(state, day);
+    if (due.isEmpty) return; // not eligible — skip, don't break/extend
+
+    final logsForDay = {
+      for (final log in _repo.getLogsForDateRange(day, day)) log.habitId: log,
+    };
+
+    final start = state.isEmpty
+        ? day
+        : state
+            .map((h) => dateOnlyOf(h.createdAt))
+            .reduce((a, b) => a.isBefore(b) ? a : b);
+    final eligible = eligiblePerfectDatesInRange(state, start, day);
+
+    if (isPerfectDay(due, logsForDay)) {
+      final current = _repo.getPerfectDayStreak();
+      final next = updatePerfectDayStreak(current, day, eligible);
+      await _repo.savePerfectDayStreak(next);
+    } else {
+      final recomputed = calculatePerfectDayStreak(
+        eligibleDatesAscending: eligiblePerfectDatesInRange(
+          state,
+          start,
+          todayDate(),
+        ),
+        isPerfect: (d) {
+          final dueThatDay = getDueHabitsForDate(state, d);
+          if (dueThatDay.isEmpty) return false;
+          final logs = {
+            for (final log in _repo.getLogsForDateRange(d, d)) log.habitId: log,
+          };
+          return isPerfectDay(dueThatDay, logs);
+        },
+        asOf: todayDate(),
+      );
+      await _repo.savePerfectDayStreak(recomputed);
+    }
+    _ref.read(perfectDayStreakProvider.notifier).refresh();
   }
 
   void _bumpLogsRevision() {

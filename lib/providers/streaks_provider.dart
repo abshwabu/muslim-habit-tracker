@@ -5,7 +5,6 @@ import '../models/habit_streak.dart';
 import '../models/perfect_day_streak.dart';
 import '../services/habit_repository.dart';
 import 'habit_repository_provider.dart';
-import 'habits_provider.dart';
 
 /// Per-habit streaks keyed by habitId. Writes via [save].
 class HabitStreaksNotifier extends StateNotifier<Map<String, HabitStreak>> {
@@ -18,7 +17,7 @@ class HabitStreaksNotifier extends StateNotifier<Map<String, HabitStreak>> {
   HabitRepository get _repo => _ref.read(habitRepositoryProvider);
 
   void refresh() {
-    final habits = _ref.read(habitsProvider);
+    final habits = _repo.getAllHabits().where((h) => h.isActive);
     state = {
       for (final habit in habits) habit.id: _repo.getHabitStreak(habit.id),
     };
@@ -32,12 +31,7 @@ class HabitStreaksNotifier extends StateNotifier<Map<String, HabitStreak>> {
 
 final habitStreaksProvider =
     StateNotifierProvider<HabitStreaksNotifier, Map<String, HabitStreak>>(
-  (ref) {
-    final notifier = HabitStreaksNotifier(ref);
-    // Keep streak map aligned when the active habit list changes.
-    ref.listen(habitsProvider, (_, __) => notifier.refresh());
-    return notifier;
-  },
+  (ref) => HabitStreaksNotifier(ref),
 );
 
 /// App-wide perfect-day streak. Writes via [save].
