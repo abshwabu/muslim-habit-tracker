@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/habit.dart';
 import '../models/habit_log.dart';
 import '../providers/providers.dart';
+import '../screens/habit_detail_screen.dart';
 import '../services/habit_repository.dart';
 import '../services/schedule_calculator.dart';
 import 'habit_grid_cell.dart';
@@ -66,7 +67,18 @@ class HabitGrid extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  for (final habit in habits) HabitNameCell(habit: habit),
+                  for (final habit in habits)
+                    HabitNameCell(
+                      habit: habit,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) =>
+                                HabitDetailScreen(habitId: habit.id),
+                          ),
+                        );
+                      },
+                    ),
                 ],
               ),
               SizedBox(

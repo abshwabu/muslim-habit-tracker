@@ -102,6 +102,11 @@ class HabitRepository {
         .toList();
   }
 
+  /// All logs for a single habit (any date).
+  List<HabitLog> getLogsForHabit(String habitId) {
+    return _logs.values.where((log) => log.habitId == habitId).toList();
+  }
+
   // --- Habit streaks (storage only) ---
 
   /// Returns the stored streak, or a zeroed streak if none exists yet.

@@ -108,9 +108,14 @@ class HabitGridDayHeader extends StatelessWidget {
 }
 
 class HabitNameCell extends StatelessWidget {
-  const HabitNameCell({super.key, required this.habit});
+  const HabitNameCell({
+    super.key,
+    required this.habit,
+    this.onTap,
+  });
 
   final Habit habit;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -119,24 +124,31 @@ class HabitNameCell extends StatelessWidget {
     return SizedBox(
       width: kHabitNameColumnWidth,
       height: kGridRowHeight,
-      child: Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: Row(
-          children: [
-            Icon(habitIconData(habit.icon), size: 20, color: color),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                habit.name,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      height: 1.15,
-                    ),
-              ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Row(
+              children: [
+                Icon(habitIconData(habit.icon), size: 20, color: color),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    habit.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          height: 1.15,
+                        ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
