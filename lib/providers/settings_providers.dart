@@ -62,3 +62,39 @@ final weekStartsOnMondayProvider =
     StateNotifierProvider<WeekStartNotifier, bool>((ref) {
   return WeekStartNotifier(ref.watch(settingsBoxProvider));
 });
+
+/// Local reminders master switch. Default: off (opt-in for permission).
+class RemindersEnabledNotifier extends StateNotifier<bool> {
+  RemindersEnabledNotifier(this._box) : super(readRemindersEnabled(_box));
+
+  final Box _box;
+
+  Future<void> setEnabled(bool enabled) async {
+    state = enabled;
+    await _box.put(SettingsKeys.remindersEnabled, enabled);
+  }
+}
+
+final remindersEnabledProvider =
+    StateNotifierProvider<RemindersEnabledNotifier, bool>((ref) {
+  return RemindersEnabledNotifier(ref.watch(settingsBoxProvider));
+});
+
+/// Evening reminder time as minutes since midnight. Default: 20:00.
+class EveningReminderMinutesNotifier extends StateNotifier<int> {
+  EveningReminderMinutesNotifier(this._box)
+      : super(readEveningReminderMinutes(_box));
+
+  final Box _box;
+
+  Future<void> setMinutes(int minutes) async {
+    final clamped = minutes.clamp(0, 24 * 60 - 1);
+    state = clamped;
+    await _box.put(SettingsKeys.eveningReminderMinutes, clamped);
+  }
+}
+
+final eveningReminderMinutesProvider =
+    StateNotifierProvider<EveningReminderMinutesNotifier, int>((ref) {
+  return EveningReminderMinutesNotifier(ref.watch(settingsBoxProvider));
+});

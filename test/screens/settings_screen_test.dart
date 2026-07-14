@@ -93,6 +93,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('Haptic feedback'), findsOneWidget);
+    expect(find.text('Local reminders'), findsOneWidget);
     expect(find.text('Grid range'), findsOneWidget);
     expect(find.text('Week starts on'), findsOneWidget);
     expect(find.text('Reset all data'), findsOneWidget);

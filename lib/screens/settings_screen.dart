@@ -6,6 +6,8 @@ import '../models/hive_setup.dart';
 import '../providers/providers.dart';
 import '../services/app_info.dart';
 import '../services/app_settings.dart';
+import '../services/local_notification_service.dart';
+import '../services/reminder_sync.dart';
 import '../services/seed_defaults.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -16,13 +18,55 @@ class SettingsScreen extends ConsumerWidget {
     final haptic = ref.watch(hapticFeedbackProvider);
     final gridRange = ref.watch(gridRangeProvider);
     final weekStartsOnMonday = ref.watch(weekStartsOnMondayProvider);
+    final remindersEnabled = ref.watch(remindersEnabledProvider);
+    final eveningMinutes = ref.watch(eveningReminderMinutesProvider);
+    final eveningTime = TimeOfDay(
+      hour: eveningMinutes ~/ 60,
+      minute: eveningMinutes % 60,
+    );
     final scheme = Theme.of(context).colorScheme;
+    final timeLabel = eveningTime.format(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
+          _SectionLabel('Reminders'),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text('Local reminders'),
+            subtitle: const Text(
+              'Evening incomplete-habit alert and Mon/Thu fasting nudges. '
+              'Scheduled on-device only — no push service.',
+            ),
+            value: remindersEnabled,
+            onChanged: (value) => _onRemindersToggled(context, ref, value),
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            enabled: remindersEnabled,
+            title: const Text('Evening reminder time'),
+            subtitle: Text(
+              remindersEnabled
+                  ? timeLabel
+                  : 'Enable reminders to set a time',
+            ),
+            trailing: const Icon(Icons.schedule_rounded),
+            onTap: remindersEnabled
+                ? () => _pickEveningTime(context, ref, eveningTime)
+                : null,
+          ),
+          Text(
+            'Fasting nudges fire at '
+            '${LocalNotificationService.fastingMorningHour.toString().padLeft(2, '0')}'
+            ':${LocalNotificationService.fastingMorningMinute.toString().padLeft(2, '0')} '
+            'on Mondays and Thursdays only when a Sunnah fasting habit is due.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: scheme.onSurface.withValues(alpha: 0.55),
+                ),
+          ),
+          const SizedBox(height: 28),
           _SectionLabel('Preferences'),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
@@ -128,6 +172,42 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _onRemindersToggled(
+    BuildContext context,
+    WidgetRef ref,
+    bool enabled,
+  ) async {
+    if (enabled) {
+      final service = ref.read(localNotificationServiceProvider);
+      final granted = await service.requestPermissions();
+      if (!context.mounted) return;
+      if (!granted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Notification permission is required for reminders'),
+          ),
+        );
+        return;
+      }
+    }
+    await ref.read(remindersEnabledProvider.notifier).setEnabled(enabled);
+  }
+
+  Future<void> _pickEveningTime(
+    BuildContext context,
+    WidgetRef ref,
+    TimeOfDay current,
+  ) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: current,
+    );
+    if (picked == null) return;
+    await ref.read(eveningReminderMinutesProvider.notifier).setMinutes(
+          hourMinuteToMinutes(picked.hour, picked.minute),
+        );
   }
 
   Future<void> _confirmReset(BuildContext context, WidgetRef ref) async {
