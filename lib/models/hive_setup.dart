@@ -12,6 +12,7 @@ abstract final class HiveBoxes {
   static const habitLogs = 'habitLogs';
   static const habitStreaks = 'habitStreaks';
   static const perfectDayStreak = 'perfectDayStreak';
+  static const settings = 'settings';
 }
 
 /// Registers all TypeAdapters and opens app boxes.
@@ -39,5 +40,6 @@ Future<void> initHive() async {
     Hive.openBox<HabitLog>(HiveBoxes.habitLogs),
     Hive.openBox<HabitStreak>(HiveBoxes.habitStreaks),
     Hive.openBox<PerfectDayStreak>(HiveBoxes.perfectDayStreak),
+    Hive.openBox(HiveBoxes.settings),
   ]);
 }

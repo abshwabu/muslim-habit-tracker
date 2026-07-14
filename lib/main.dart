@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'models/hive_setup.dart';
 import 'screens/home_screen.dart';
+import 'services/seed_defaults.dart';
 import 'theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initHive();
+  await seedDefaultHabitsIfNeeded();
 
   runApp(
     const ProviderScope(
