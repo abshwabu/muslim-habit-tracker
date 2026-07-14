@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-/// Placeholder until habit editing (Step 9) is implemented.
+import 'add_habit_screen.dart';
+
+/// Opens the shared habit form in edit mode.
 class EditHabitScreen extends StatelessWidget {
   const EditHabitScreen({super.key, required this.habitId});
 
@@ -8,22 +10,6 @@ class EditHabitScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Edit Habit')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Text(
-            'Habit editing coming in Step 9.',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(
-                        alpha: 0.65,
-                      ),
-                ),
-          ),
-        ),
-      ),
-    );
+    return AddHabitScreen(habitId: habitId);
   }
 }
