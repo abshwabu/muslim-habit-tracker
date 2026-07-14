@@ -38,15 +38,15 @@ class HabitGridCell extends StatelessWidget {
         '–',
         style: TextStyle(
           color: muted,
-          fontSize: 16,
+          fontSize: 20,
           fontWeight: FontWeight.w300,
           height: 1,
         ),
       );
     } else if (completed) {
       glyph = Container(
-        width: 18,
-        height: 18,
+        width: kGridDotSize,
+        height: kGridDotSize,
         decoration: BoxDecoration(
           color: color,
           shape: BoxShape.circle,
@@ -54,11 +54,11 @@ class HabitGridCell extends StatelessWidget {
       );
     } else {
       glyph = Container(
-        width: 18,
-        height: 18,
+        width: kGridDotSize,
+        height: kGridDotSize,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: color.withValues(alpha: 0.55), width: 2),
+          border: Border.all(color: color.withValues(alpha: 0.55), width: 2.5),
         ),
       );
     }
@@ -91,7 +91,7 @@ class HabitGridDayHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final isToday = HabitRepository.formatDate(date) ==
         HabitRepository.formatDate(DateTime.now());
-    final style = Theme.of(context).textTheme.labelSmall?.copyWith(
+    final style = Theme.of(context).textTheme.labelMedium?.copyWith(
           color: Theme.of(context).colorScheme.onSurface.withValues(
                 alpha: isToday ? 0.9 : 0.45,
               ),
@@ -134,14 +134,14 @@ class HabitNameCell extends StatelessWidget {
             padding: const EdgeInsets.only(right: 8),
             child: Row(
               children: [
-                Icon(habitIconData(habit.icon), size: 20, color: color),
-                const SizedBox(width: 8),
+                Icon(habitIconData(habit.icon), size: 24, color: color),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     habit.name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w500,
                           height: 1.15,
                         ),

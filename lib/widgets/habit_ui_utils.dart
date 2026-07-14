@@ -68,7 +68,8 @@ IconData habitIconData(String key) {
   }
 }
 
-const double kHabitNameColumnWidth = 148;
-const double kGridCellSize = 28;
-const double kGridRowHeight = 44;
-const double kGridHeaderHeight = 28;
+const double kHabitNameColumnWidth = 168;
+const double kGridCellSize = 36;
+const double kGridRowHeight = 54;
+const double kGridHeaderHeight = 34;
+const double kGridDotSize = 22;

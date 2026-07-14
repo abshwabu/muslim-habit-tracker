@@ -78,7 +78,7 @@ class HabitGrid extends ConsumerWidget {
                               'Habit',
                               style: Theme.of(context)
                                   .textTheme
-                                  .labelSmall
+                                  .labelMedium
                                   ?.copyWith(
                                     color: Theme.of(context)
                                         .colorScheme

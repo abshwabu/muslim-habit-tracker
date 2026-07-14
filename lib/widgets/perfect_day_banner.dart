@@ -15,8 +15,8 @@ class PerfectDayBanner extends ConsumerWidget {
 
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       decoration: BoxDecoration(
         color: scheme.primary.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
@@ -25,7 +25,7 @@ class PerfectDayBanner extends ConsumerWidget {
       child: Text(
         '🔥 $streak day streak — ${progress.done} of ${progress.total} '
         "today's habits done",
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
               color: scheme.onSurface.withValues(alpha: 0.85),
               fontWeight: FontWeight.w600,
               height: 1.3,
